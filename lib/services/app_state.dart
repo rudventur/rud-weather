@@ -86,6 +86,7 @@ class AppState extends ChangeNotifier {
     error = null;
     notifyListeners();
     if (remember) _prefs?.setString('lastPlace', jsonEncode(p.toJson()));
+    if (remember && !myLocation) locationError = null; // user picked a place explicitly
     try {
       final f = await WeatherApi.forecast(p);
       if (place?.key != p.key) return; // superseded

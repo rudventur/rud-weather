@@ -131,6 +131,7 @@ class _FavouritesRow extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 8, bottom: 6),
               child: ChoiceChip(
+                showCheckmark: false,
                 avatar: const Icon(Icons.star, size: 16, color: Colors.amber),
                 label: Text(p.name),
                 selected: s.place?.key == p.key,
