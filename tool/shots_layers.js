@@ -1,5 +1,5 @@
 // Extra checks: temperature+wind layers, radar playback, MET Norway fallback.
-const { chromium } = require(process.env.PW_CORE || 'playwright-core');
+const { chromium } = require(process.env.PW_CORE ? require('path').resolve(process.env.PW_CORE.startsWith('/') ? process.env.PW_CORE : 'node_modules/' + process.env.PW_CORE) : 'playwright-core');
 const base = process.argv[2];
 const out = process.argv[3] || '.';
 (async () => {

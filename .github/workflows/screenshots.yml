@@ -1,0 +1,27 @@
+name: Live site screenshots (manual)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Install Playwright + Chromium
+        run: |
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund playwright
+          npx playwright install --with-deps chromium
+      - name: Capture phone-size screenshots of the live site
+        run: |
+          mkdir -p shots
+          PW_CORE=playwright node tool/shots.js "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" shots
+          PW_CORE=playwright node tool/shots_layers.js "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" shots
+      - uses: actions/upload-artifact@v7
+        with:
+          name: screenshots
+          path: shots

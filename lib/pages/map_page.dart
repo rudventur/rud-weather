@@ -41,7 +41,7 @@ class _MapPageState extends State<MapPage> {
 
   // Temperature / wind grid
   List<GridPoint> _grid = const [];
-  List<(LatLng, LatLng)> _cells = const []; // (sw, ne) for each grid point
+  List<(LatLng, LatLng)> _cells = const []; // (sw, ne) for each entry in _grid
   bool _gridLoading = false;
   String? _gridError;
   Timer? _gridDebounce;
@@ -158,9 +158,14 @@ class _MapPageState extends State<MapPage> {
     try {
       final g = await WeatherApi.grid(pts);
       if (!mounted || seq != _gridSeq) return;
+      // Keep the cell that belongs to each returned point.
+      final byKey = <String, (LatLng, LatLng)>{
+        for (var k = 0; k < pts.length; k++) '${pts[k].$1.toStringAsFixed(2)},${pts[k].$2.toStringAsFixed(2)}': cells[k],
+      };
+      final keep = g.where((p) => byKey.containsKey('${p.lat.toStringAsFixed(2)},${p.lon.toStringAsFixed(2)}')).toList();
       setState(() {
-        _grid = g;
-        _cells = cells;
+        _grid = keep;
+        _cells = [for (final p in keep) byKey['${p.lat.toStringAsFixed(2)},${p.lon.toStringAsFixed(2)}']!];
         _gridError = null;
       });
     } catch (e) {
@@ -373,12 +378,12 @@ class _MapPageState extends State<MapPage> {
               ]),
             if (gridOn)
               MarkerLayer(markers: [
-                for (final g in _grid)
+                for (var i = 0; i < _grid.length; i++)
                   Marker(
-                    point: LatLng(g.lat, g.lon),
+                    point: LatLng((_cells[i].$1.latitude + _cells[i].$2.latitude) / 2, (_cells[i].$1.longitude + _cells[i].$2.longitude) / 2),
                     width: 70,
                     height: 44,
-                    child: _GridLabel(g: g, s: s, showTemp: tempOn, showWind: windOn),
+                    child: _GridLabel(g: _grid[i], s: s, showTemp: tempOn, showWind: windOn),
                   ),
               ]),
             MarkerLayer(markers: [
@@ -657,6 +662,8 @@ class _Attribution extends StatelessWidget {
         if (radar) ...[sep, link('RainViewer', 'https://www.rainviewer.com/')],
         sep,
         link('Open-Meteo', 'https://open-meteo.com/'),
+        sep,
+        link('MET Norway', 'https://api.met.no/'),
       ]),
     );
   }

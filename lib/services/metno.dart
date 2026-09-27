@@ -131,6 +131,35 @@ class MetNoApi {
     );
   }
 
+  /// Current temperature / wind for grid points (fallback for the map layers).
+  /// Requests run with limited concurrency to stay polite to api.met.no.
+  static Future<List<GridPoint>> grid(List<(double, double)> pts) async {
+    final out = List<GridPoint?>.filled(pts.length, null);
+    var next = 0;
+    Future<void> worker() async {
+      while (next < pts.length) {
+        final i = next++;
+        try {
+          final uri = Uri.https('api.met.no', '/weatherapi/locationforecast/2.0/compact',
+              {'lat': pts[i].$1.toStringAsFixed(2), 'lon': pts[i].$2.toStringAsFixed(2)});
+          final res = await http.get(uri).timeout(const Duration(seconds: 15));
+          if (res.statusCode != 200) continue;
+          final j = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
+          final t = (((j['properties'] as Map)['timeseries'] as List).first as Map)['data'] as Map;
+          final d = (t['instant'] as Map)['details'] as Map;
+          final sym = ((t['next_1_hours'] as Map?)?['summary'] as Map?)?['symbol_code'] as String?;
+          double n(String k) => (d[k] as num?)?.toDouble() ?? double.nan;
+          out[i] = GridPoint(pts[i].$1, pts[i].$2, n('air_temperature'), n('wind_speed') * 3.6, n('wind_from_direction'), symbolToWmo(sym));
+        } catch (_) {}
+      }
+    }
+
+    await Future.wait(List.generate(6, (_) => worker()));
+    final res = out.whereType<GridPoint>().toList();
+    if (res.isEmpty) throw Exception('api.met.no: no grid data');
+    return res;
+  }
+
   static bool _isDay(String? sym, DateTime utc, (DateTime?, DateTime?) sun) {
     if (sym != null && sym.endsWith('_night')) return false;
     if (sym != null && (sym.endsWith('_day') || sym.endsWith('_polartwilight'))) return true;

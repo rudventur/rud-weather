@@ -70,9 +70,21 @@ class WeatherApi {
     return Forecast.fromJson(place, j);
   }
 
-  /// Current temperature / wind for many points in one request.
+  /// Current temperature / wind for many points (Open-Meteo, one request; MET Norway fallback).
   static Future<List<GridPoint>> grid(List<(double, double)> pts) async {
     if (pts.isEmpty) return const [];
+    try {
+      return await _gridOpenMeteo(pts);
+    } catch (e) {
+      try {
+        return await MetNoApi.grid(pts);
+      } catch (_) {
+        rethrow;
+      }
+    }
+  }
+
+  static Future<List<GridPoint>> _gridOpenMeteo(List<(double, double)> pts) async {
     final uri = Uri.https('api.open-meteo.com', '/v1/forecast', {
       'latitude': pts.map((p) => p.$1.toStringAsFixed(2)).join(','),
       'longitude': pts.map((p) => p.$2.toStringAsFixed(2)).join(','),
