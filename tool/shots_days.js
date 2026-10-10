@@ -25,7 +25,7 @@ const fs = require('fs');
   await p.mouse.click(320, y); await p.waitForTimeout(4000);
   await p.screenshot({ path: `${out}/phone-3-tomorrow.png` });
   await p.mouse.click(195, y); await p.waitForTimeout(3000);
-  await p.mouse.move(195, 600); await p.mouse.wheel(0, 500); await p.waitForTimeout(3000);
+  await p.mouse.move(195, 740); await p.mouse.wheel(0, 500); await p.waitForTimeout(3000);
   await p.screenshot({ path: `${out}/phone-2b-today-scrolled.png` });
   const d = await mk({ width: 1280, height: 800 }, false);
   await d.screenshot({ path: `${out}/desktop-all-three.png` });
