@@ -58,12 +58,12 @@ class WeatherCode {
 
   /// Background gradient for the hero card.
   static List<Color> gradient(int code, bool isDay) {
-    if (!isDay) return const [Color(0xFF1A237E), Color(0xFF0D1333)];
-    if (code <= 1) return const [Color(0xFF42A5F5), Color(0xFF1565C0)];
-    if (code <= 3 || code == 45 || code == 48) return const [Color(0xFF78909C), Color(0xFF37474F)];
-    if (code >= 95) return const [Color(0xFF5E35B1), Color(0xFF263238)];
-    if ((code >= 71 && code <= 77) || code == 85 || code == 86) return const [Color(0xFF90CAF9), Color(0xFF546E7A)];
-    return const [Color(0xFF5C6BC0), Color(0xFF283593)];
+    if (!isDay) return const [Color(0xFF1A237E), Color(0xFF0A0A0A)];
+    if (code <= 1) return const [Color(0xFF42A5F5), Color(0xFF0A0A0A)];
+    if (code <= 3 || code == 45 || code == 48) return const [Color(0xFF78909C), Color(0xFF0A0A0A)];
+    if (code >= 95) return const [Color(0xFF5E35B1), Color(0xFF0A0A0A)];
+    if ((code >= 71 && code <= 77) || code == 85 || code == 86) return const [Color(0xFF90CAF9), Color(0xFF0A0A0A)];
+    return const [Color(0xFF5C6BC0), Color(0xFF0A0A0A)];
   }
 }
 

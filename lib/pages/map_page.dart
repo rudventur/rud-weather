@@ -651,12 +651,12 @@ class _Attribution extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget link(String t, String url) => InkWell(
           onTap: () => launchUrl(Uri.parse(url), webOnlyWindowName: '_blank'),
-          child: Text(t, style: const TextStyle(fontSize: 10, color: Color(0xFF0B57D0))),
+          child: Text(t, style: const TextStyle(fontSize: 10, color: Color(0xFF00FF41))),
         );
-    const sep = Text(' · ', style: TextStyle(fontSize: 10, color: Colors.black54));
+    const sep = Text(' · ', style: TextStyle(fontSize: 10, color: Colors.white54));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.85), borderRadius: BorderRadius.circular(4)),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.75), borderRadius: BorderRadius.circular(4)),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         link('© OpenStreetMap contributors', 'https://www.openstreetmap.org/copyright'),
         if (radar) ...[sep, link('RainViewer', 'https://www.rainviewer.com/')],
