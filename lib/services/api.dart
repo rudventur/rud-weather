@@ -104,6 +104,44 @@ class WeatherApi {
     return out;
   }
 
+  /// Yesterday's observed-ish (model analysis) daily summary for a place (Open-Meteo past_days=1).
+  static Future<YesterdayWeather> yesterday(double lat, double lon) async {
+    final uri = Uri.https('api.open-meteo.com', '/v1/forecast', {
+      'latitude': lat.toStringAsFixed(4),
+      'longitude': lon.toStringAsFixed(4),
+      'daily': 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max,'
+          'wind_direction_10m_dominant,sunshine_duration',
+      'timezone': 'auto',
+      'past_days': '1',
+      'forecast_days': '1',
+    });
+    final j = await _getJson(uri) as Map<String, dynamic>;
+    final d = j['daily'] as Map<String, dynamic>;
+    double v(String k) => ((d[k] as List)[0] as num?)?.toDouble() ?? double.nan;
+    return YesterdayWeather(
+      DateTime.parse((d['time'] as List)[0] as String),
+      ((d['weather_code'] as List)[0] as num?)?.toInt() ?? 0,
+      v('temperature_2m_max'), v('temperature_2m_min'), v('precipitation_sum'), v('wind_speed_10m_max'),
+      v('wind_gusts_10m_max'), v('wind_direction_10m_dominant'), v('sunshine_duration'),
+    );
+  }
+
+  /// Current cloud cover (%) for many points in one Open-Meteo request.
+  static Future<List<(double, double, double)>> cloudGrid(List<(double, double)> pts) async {
+    final uri = Uri.https('api.open-meteo.com', '/v1/forecast', {
+      'latitude': pts.map((p) => p.$1.toStringAsFixed(2)).join(','),
+      'longitude': pts.map((p) => p.$2.toStringAsFixed(2)).join(','),
+      'current': 'cloud_cover',
+      'forecast_days': '1',
+    });
+    final body = await _getJson(uri);
+    final list = body is List ? body : [body];
+    return [
+      for (var k = 0; k < list.length && k < pts.length; k++)
+        (pts[k].$1, pts[k].$2, (((list[k] as Map)['current'] as Map?)?['cloud_cover'] as num?)?.toDouble() ?? double.nan),
+    ];
+  }
+
   // ---------------- Geocoding ----------------
   static Future<List<Place>> search(String query) async {
     final q = query.trim();

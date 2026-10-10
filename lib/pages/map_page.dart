@@ -562,7 +562,7 @@ class _MapPageState extends State<MapPage> {
               TextButton(
                 onPressed: () {
                   s.selectPlace(p);
-                  s.goTab(0);
+                  s.goTab(1);
                 },
                 child: const Text('Forecast'),
               ),

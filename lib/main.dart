@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'pages/map_page.dart';
+import 'pages/three_days_page.dart';
 import 'pages/news_page.dart';
 import 'pages/weather_page.dart';
 import 'services/app_state.dart';
@@ -52,6 +53,7 @@ class HomeShell extends StatelessWidget {
   const HomeShell({super.key});
 
   static const _dest = [
+    (Icons.view_week_outlined, Icons.view_week, '3 days'),
     (Icons.wb_sunny_outlined, Icons.wb_sunny, 'Weather'),
     (Icons.map_outlined, Icons.map, 'Map'),
     (Icons.newspaper_outlined, Icons.newspaper, 'News'),
@@ -63,7 +65,7 @@ class HomeShell extends StatelessWidget {
     final wide = MediaQuery.sizeOf(context).width >= 840;
     final body = IndexedStack(
       index: s.tab,
-      children: const [WeatherPage(), MapPage(), NewsPage()],
+      children: const [ThreeDaysPage(), WeatherPage(), MapPage(), NewsPage()],
     );
     if (wide) {
       return Scaffold(

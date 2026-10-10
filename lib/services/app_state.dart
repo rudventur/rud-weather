@@ -33,9 +33,9 @@ class AppState extends ChangeNotifier {
   LatLng? mapFocus; // requested map centre (e.g. after search)
 
   Future<void> init() async {
-    // Deep links: ?tab=weather|map|news
+    // Deep links: ?tab=days|weather|map|news
     final t = Uri.base.queryParameters['tab'];
-    if (t != null) tab = const {'weather': 0, 'map': 1, 'news': 2}[t] ?? 0;
+    if (t != null) tab = const {'days': 0, 'weather': 1, 'map': 2, 'news': 3}[t] ?? 0;
     _prefs = await SharedPreferences.getInstance();
     fahrenheit = _prefs!.getBool('fahrenheit') ?? false;
     mph = _prefs!.getBool('mph') ?? false;
@@ -137,7 +137,7 @@ class AppState extends ChangeNotifier {
 
   void showOnMap(Place p) {
     mapFocus = LatLng(p.lat, p.lon);
-    goTab(1);
+    goTab(2);
   }
 
   // ---------- formatting helpers ----------

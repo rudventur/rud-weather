@@ -114,6 +114,13 @@ class GridPoint {
   GridPoint(this.lat, this.lon, this.temp, this.windSpeed, this.windDir, this.code);
 }
 
+class YesterdayWeather {
+  final DateTime date;
+  final int code;
+  final double tMax, tMin, precipSum, windMax, gustMax, windDir, sunshineSec;
+  YesterdayWeather(this.date, this.code, this.tMax, this.tMin, this.precipSum, this.windMax, this.gustMax, this.windDir, this.sunshineSec);
+}
+
 class WeatherAlert {
   final String title, description, severity, source;
   final String? link;
