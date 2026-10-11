@@ -34,6 +34,29 @@
 <body>
   <div id="splash"><img src="icons/Icon-192.png" alt=""><p>Rud Weather</p></div>
   <script>
+    // PWA install: keep the deferred beforeinstallprompt event for Flutter's Install button.
+    window.rwInstallPrompt = null;
+    window.rwInstalled = false;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.rwInstallPrompt = e;
+      window.dispatchEvent(new Event('rw-install-change'));
+    });
+    window.addEventListener('appinstalled', function () {
+      window.rwInstallPrompt = null;
+      window.rwInstalled = true;
+      window.dispatchEvent(new Event('rw-install-change'));
+    });
+    window.rwIsStandalone = function () {
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    };
+    window.rwPromptInstall = function () {
+      var e = window.rwInstallPrompt;
+      if (!e) return Promise.resolve('unavailable');
+      window.rwInstallPrompt = null;
+      e.prompt();
+      return e.userChoice.then(function (c) { window.dispatchEvent(new Event('rw-install-change')); return c.outcome; });
+    };
     // Remove the HTML splash once Flutter renders its first frame.
     window.addEventListener('flutter-first-frame', function () {
       var s = document.getElementById('splash');
